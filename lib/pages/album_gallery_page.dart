@@ -165,28 +165,28 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
       //           onPressed: () => _contributePhoto(context),
       //         ),
       //       ),
-            Container(
-              margin: EdgeInsets.all(20),
-                child: CustomScrollView(
-                  shrinkWrap: true,
-                  physics: ScrollPhysics(),
-                  slivers: <Widget>[
-                    SliverGrid(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                          childAspectRatio: 1.5,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10
-                      ),
-                      delegate: SliverChildListDelegate(imageSliders),
-                    )
-                  ]
-              )
-            ),
-            // FutureBuilder<SearchMediaItemsResponse>(
-            //   future: searchResponse,
-            //   builder: _buildMediaItemList,
-            // )
+      //       Container(
+      //         margin: EdgeInsets.all(20),
+      //           child: CustomScrollView(
+      //             shrinkWrap: true,
+      //             physics: ScrollPhysics(),
+      //             slivers: <Widget>[
+      //               SliverGrid(
+      //                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //                     crossAxisCount: 5,
+      //                     childAspectRatio: 1.5,
+      //                     crossAxisSpacing: 10,
+      //                     mainAxisSpacing: 10
+      //                 ),
+      //                 delegate: SliverChildListDelegate(imageSliders),
+      //               )
+      //             ]
+      //         )
+      //       ),
+            FutureBuilder<SearchMediaItemsResponse>(
+              future: searchResponse,
+              builder: _buildMediaItemList,
+            )
           ],
         );
       }),
@@ -199,45 +199,6 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
         Image.network(item, width: 400, fit: BoxFit.cover)
       ]
     ))).toList();
-
-    // Container(
-    //   margin: EdgeInsets.all(5.0),
-    //   child: ClipRRect(
-    //       borderRadius: BorderRadius.all(Radius.circular(5.0)),
-    //       child: Stack(
-    //         children: <Widget>[
-    //           Image.network(item, fit: BoxFit.cover, width: 1000.0),
-    //           Positioned(
-    //             bottom: 0.0,
-    //             left: 0.0,
-    //             right: 0.0,
-    //             child: Container(
-    //               decoration: BoxDecoration(
-    //                 gradient: LinearGradient(
-    //                   colors: [
-    //                     Color.fromARGB(200, 0, 0, 0),
-    //                     Color.fromARGB(0, 0, 0, 0)
-    //                   ],
-    //                   begin: Alignment.bottomCenter,
-    //                   end: Alignment.topCenter,
-    //                 ),
-    //               ),
-    //               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-    //               child: Text(
-    //                 'No. ${imgList.indexOf(item)} image',
-    //                 style: TextStyle(
-    //                   color: Colors.white,
-    //                   fontSize: 20.0,
-    //                   fontWeight: FontWeight.bold,
-    //                 ),
-    //               ),
-    //             ),
-    //           ),
-    //         ],
-    //       )
-    //   ),
-    // ),
-  // )).toList();
 
 //   Future<void> _shareAlbum(BuildContext context) async {
 //     // TODO(codelab): Implement this method.
@@ -348,18 +309,39 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
         return Container();
       }
 
-      return Expanded(
-        child: ListView.builder(
-          itemCount: snapshot.data.mediaItems.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _buildMediaItem(snapshot.data.mediaItems[index]);
-          },
-        ),
+      return Container(
+          margin: EdgeInsets.all(20),
+          child: CustomScrollView(
+              shrinkWrap: true,
+              physics: ScrollPhysics(),
+              slivers: <Widget>[
+                SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10
+                  ),
+                  delegate: SliverChildListDelegate(
+                      _buildMediaItems(snapshot.data.mediaItems)),
+                )
+              ]
+          )
       );
-    } else {
-      ScopedModel.of<PhotosLibraryApiModel>(context)
-          .searchMediaItems(album.id);
     }
+
+    //   return Expanded(
+    //     child: ListView.builder(
+    //       itemCount: snapshot.data.mediaItems.length,
+    //       itemBuilder: (BuildContext context, int index) {
+    //         return _buildMediaItem(snapshot.data.mediaItems[index]);
+    //       },
+    //     ),
+    //   );
+    // } else {
+    //   ScopedModel.of<PhotosLibraryApiModel>(context)
+    //       .searchMediaItems(album.id);
+    // }
 
     if (snapshot.hasError) {
       print(snapshot.error);
@@ -371,6 +353,42 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
     );
   }
 //
+  List<Widget> _buildMediaItems(List<MediaItem> mediaItems) {
+    return mediaItems.map((mediaItem) => Container(
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: AspectRatio(
+                    aspectRatio: 1,
+                    child: CachedNetworkImage(
+                    // width: 50,
+                    // height: 50,
+                    fit: BoxFit.cover,
+                    imageUrl: '${mediaItem.baseUrl}=w400',
+                    progressIndicatorBuilder: (context, url, downloadProgress) =>
+                        CircularProgressIndicator(value: downloadProgress.progress),
+                    errorWidget: (BuildContext context, String url, Object error) {
+                      print(error);
+                      return const Icon(Icons.error);
+                    },
+                  )
+                ),
+              ),
+              // Container(
+              //   // padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 2),
+              //   width: 364,
+              //   child: Text(
+              //     mediaItem.description ?? '',
+              //     textAlign: TextAlign.left,
+              //   ),
+              // ),
+          ])
+        )
+    )
+    ).toList();
+  }
   Widget _buildMediaItem(MediaItem mediaItem) {
     return Column(
       children: <Widget>[
