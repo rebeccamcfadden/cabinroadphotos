@@ -39,6 +39,7 @@ import 'package:path/path.dart' as path;
 import 'album.dart';
 import 'get_album_request.dart';
 import 'list_albums_response.dart';
+import 'list_shared_albums_response.dart';
 
 class PhotosLibraryApiClient {
   PhotosLibraryApiClient(this._authHeaders);
@@ -119,25 +120,25 @@ class PhotosLibraryApiClient {
     );
   }
   //
-  // Future<ListSharedAlbumsResponse> listSharedAlbums() async {
-  //   return http
-  //       .get(
-  //       'https://photoslibrary.googleapis.com/v1/sharedAlbums?'
-  //           'pageSize=50&excludeNonAppCreatedData=true',
-  //       headers: await _authHeaders)
-  //       .then(
-  //         (Response response) {
-  //       if (response.statusCode != 200) {
-  //         print(response.reasonPhrase);
-  //         print(response.body);
-  //       }
-  //
-  //       print(response.body);
-  //
-  //       return ListSharedAlbumsResponse.fromJson(jsonDecode(response.body));
-  //     },
-  //   );
-  // }
+  Future<ListSharedAlbumsResponse> listSharedAlbums() async {
+    return http
+        .get(
+        'https://photoslibrary.googleapis.com/v1/sharedAlbums?'
+            'pageSize=50',
+        headers: await _authHeaders)
+        .then(
+          (Response response) {
+        if (response.statusCode != 200) {
+          print(response.reasonPhrase);
+          print(response.body);
+        }
+
+        print(response.body);
+
+        return ListSharedAlbumsResponse.fromJson(jsonDecode(response.body));
+      },
+    );
+  }
 
   // Future<String> uploadMediaItem(File image) async {
   //   // TODO(codelab): Implement this method.

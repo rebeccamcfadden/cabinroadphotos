@@ -220,6 +220,7 @@ class AlbumDisplayPage extends StatelessWidget {
 //   }
 //
   Widget _buildSharedIcon(Album album) {
+    print("Share info for " + album.title + " is " + album.shareInfo.toString());
     if (album.shareInfo != null) {
       return const Padding(
           padding: EdgeInsets.only(right: 8),

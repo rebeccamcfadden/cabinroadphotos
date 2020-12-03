@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:cabinroadphotos2/photos_library_api/album.dart';
 import 'package:cabinroadphotos2/photos_library_api/get_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/list_albums_response.dart';
+import 'package:cabinroadphotos2/photos_library_api/list_shared_albums_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -165,13 +166,13 @@ class PhotosLibraryApiModel extends Model {
       _albums.addAll(ownedAlbums);
     }
 
-    /*
+
     // Load albums from owned and shared albums
     final List<List<Album>> list =
     await Future.wait([_loadSharedAlbums(), _loadAlbums()]);
 
     _albums.addAll(list.expand((a) => a ?? []));
-    */
+
 
     notifyListeners();
     hasAlbums = true;
@@ -179,13 +180,13 @@ class PhotosLibraryApiModel extends Model {
   //
   // /// Load Albums into the model by retrieving the list of all albums shared
   // /// with the user.
-  // Future<List<Album>> _loadSharedAlbums() {
-  //   return client.listSharedAlbums().then(
-  //         (ListSharedAlbumsResponse response) {
-  //       return response.sharedAlbums;
-  //     },
-  //   );
-  // }
+  Future<List<Album>> _loadSharedAlbums() {
+    return client.listSharedAlbums().then(
+          (ListSharedAlbumsResponse response) {
+        return response.sharedAlbums;
+      },
+    );
+  }
   //
   /// Load albums into the model by retrieving the list of all albums owned
   /// by the user.
