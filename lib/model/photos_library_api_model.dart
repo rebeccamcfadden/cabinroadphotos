@@ -18,7 +18,10 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:cabinroadphotos2/photos_library_api/album.dart';
+import 'package:cabinroadphotos2/photos_library_api/get_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/list_albums_response.dart';
+import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.dart';
+import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/photos_library_api/api_client.dart';
@@ -91,13 +94,13 @@ class PhotosLibraryApiModel extends Model {
   //   return null;
   // }
   //
-  // Future<Album> getAlbum(String id) async {
-  //   return client
-  //       .getAlbum(GetAlbumRequest.defaultOptions(id))
-  //       .then((Album album) {
-  //     return album;
-  //   });
-  // }
+  Future<Album> getAlbum(String id) async {
+    return client
+        .getAlbum(GetAlbumRequest.defaultOptions(id))
+        .then((Album album) {
+      return album;
+    });
+  }
   //
   // Future<JoinSharedAlbumResponse> joinSharedAlbum(String shareToken) {
   //   return client
@@ -117,13 +120,13 @@ class PhotosLibraryApiModel extends Model {
   //   });
   // }
   //
-  // Future<SearchMediaItemsResponse> searchMediaItems(String albumId) async {
-  //   return client
-  //       .searchMediaItems(SearchMediaItemsRequest.albumId(albumId))
-  //       .then((SearchMediaItemsResponse response) {
-  //     return response;
-  //   });
-  // }
+  Future<SearchMediaItemsResponse> searchMediaItems(String albumId) async {
+    return client
+        .searchMediaItems(SearchMediaItemsRequest.albumId(albumId))
+        .then((SearchMediaItemsResponse response) {
+      return response;
+    });
+  }
   //
   // Future<String> uploadMediaItem(File image) {
   //   return client.uploadMediaItem(image);

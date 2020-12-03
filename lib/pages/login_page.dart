@@ -19,19 +19,23 @@ class LoginPage extends StatelessWidget {
     return ScopedModelDescendant<PhotosLibraryApiModel>(
       builder:
           (BuildContext context, Widget child, PhotosLibraryApiModel apiModel) {
-        return Column(
+        return Container(
+            child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SvgPicture.asset(
               'assets/lockup_photos_horizontal.svg',
+              width: 400,
             ),
             Container(
+              alignment: Alignment.center,
               padding: const EdgeInsets.all(30),
               child: const Text(
                 'Get albums to display in Cabin Road Photos',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontWeight: FontWeight.w500, color: Color(0x99000000)),
+                    fontWeight: FontWeight.w400, color: Color(0x99000000), fontSize: 24),
               ),
             ),
             RaisedButton(
@@ -49,6 +53,7 @@ class LoginPage extends StatelessWidget {
               },
             ),
           ],
+        ),
         );
       },
     );

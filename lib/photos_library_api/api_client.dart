@@ -17,6 +17,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.dart';
+import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:http/http.dart';
 // import 'package:cabinroadphotos/photos_library_api/album.dart';
 import 'package:http/http.dart' as http;
@@ -147,25 +149,26 @@ class PhotosLibraryApiClient {
   //   // Make the HTTP request to upload the image. The file is sent in the body.
   // }
 
-  // Future<SearchMediaItemsResponse> searchMediaItems(
-  //     SearchMediaItemsRequest request) async {
-  //   return http
-  //       .post(
-  //     'https://photoslibrary.googleapis.com/v1/mediaItems:search',
-  //     body: jsonEncode(request),
-  //     headers: await _authHeaders,
-  //   )
-  //       .then(
-  //         (Response response) {
-  //       if (response.statusCode != 200) {
-  //         print(response.reasonPhrase);
-  //         print(response.body);
-  //       }
-  //
-  //       return SearchMediaItemsResponse.fromJson(jsonDecode(response.body));
-  //     },
-  //   );
-  // }
+  Future<SearchMediaItemsResponse> searchMediaItems(
+      SearchMediaItemsRequest request) async {
+    return http
+        .post(
+      'https://photoslibrary.googleapis.com/v1/mediaItems:search',
+      body: jsonEncode(request),
+      headers: await _authHeaders,
+    )
+        .then(
+          (Response response) {
+        if (response.statusCode != 200) {
+          print(response.reasonPhrase);
+          print(response.body);
+        }
+        print(response.body);
+
+        return SearchMediaItemsResponse.fromJson(jsonDecode(response.body));
+      },
+    );
+  }
   //
   // Future<BatchCreateMediaItemsResponse> batchCreateMediaItems(
   //     BatchCreateMediaItemsRequest request) async {

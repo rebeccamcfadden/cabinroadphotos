@@ -51,6 +51,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
+    - ic_cabinrdphoto.svg
     - lockup_photos_horizontal.svg
   # To add assets to your application, add an assets section, like this:
   # assets:

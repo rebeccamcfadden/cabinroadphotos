@@ -29,14 +29,16 @@ class PhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
         return AppBar(
           title: Row(
             children: <Widget>[
-              // Container(
-              //   child: SvgPicture.asset(
-              //     'assets/ic_cabinroadphotos.svg',
-              //     excludeFromSemantics: true,
-              //     color: Colors.green[800],
-              //   ),
-              //   padding: const EdgeInsets.only(right: 8),
-              // ),
+              Container(
+                child: SvgPicture.asset(
+                  'assets/ic_cabinrdphoto.svg',
+                  width: 48,
+                  height: 48,
+                  excludeFromSemantics: true,
+                  color: Colors.green[800],
+                ),
+                padding: const EdgeInsets.only(right: 8),
+              ),
               Text(
                 'Cabin Road Photos',
               ),
