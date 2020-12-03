@@ -34,6 +34,10 @@ import 'package:http/http.dart' as http;
 // import 'package:cabinroadphotos/photos_library_api/share_album_response.dart';
 import 'package:path/path.dart' as path;
 
+import 'album.dart';
+import 'get_album_request.dart';
+import 'list_albums_response.dart';
+
 class PhotosLibraryApiClient {
   PhotosLibraryApiClient(this._authHeaders);
 
@@ -76,42 +80,42 @@ class PhotosLibraryApiClient {
   //   );
   // }
   //
-  // Future<Album> getAlbum(GetAlbumRequest request) async {
-  //   return http
-  //       .get(
-  //       'https://photoslibrary.googleapis.com/v1/albums/${request.albumId}',
-  //       headers: await _authHeaders)
-  //       .then(
-  //         (Response response) {
-  //       if (response.statusCode != 200) {
-  //         print(response.reasonPhrase);
-  //         print(response.body);
-  //       }
-  //
-  //       return Album.fromJson(jsonDecode(response.body));
-  //     },
-  //   );
-  // }
-  //
-  // Future<ListAlbumsResponse> listAlbums() async {
-  //   return http
-  //       .get(
-  //       'https://photoslibrary.googleapis.com/v1/albums?'
-  //           'pageSize=50',
-  //       headers: await _authHeaders)
-  //       .then(
-  //         (Response response) {
-  //       if (response.statusCode != 200) {
-  //         print(response.reasonPhrase);
-  //         print(response.body);
-  //       }
-  //
-  //       print(response.body);
-  //
-  //       return ListAlbumsResponse.fromJson(jsonDecode(response.body));
-  //     },
-  //   );
-  // }
+  Future<Album> getAlbum(GetAlbumRequest request) async {
+    return http
+        .get(
+        'https://photoslibrary.googleapis.com/v1/albums/${request.albumId}',
+        headers: await _authHeaders)
+        .then(
+          (Response response) {
+        if (response.statusCode != 200) {
+          print(response.reasonPhrase);
+          print(response.body);
+        }
+
+        return Album.fromJson(jsonDecode(response.body));
+      },
+    );
+  }
+
+  Future<ListAlbumsResponse> listAlbums() async {
+    return http
+        .get(
+        'https://photoslibrary.googleapis.com/v1/albums?'
+            'pageSize=50',
+        headers: await _authHeaders)
+        .then(
+          (Response response) {
+        if (response.statusCode != 200) {
+          print(response.reasonPhrase);
+          print(response.body);
+        }
+
+        print(response.body);
+
+        return ListAlbumsResponse.fromJson(jsonDecode(response.body));
+      },
+    );
+  }
   //
   // Future<ListSharedAlbumsResponse> listSharedAlbums() async {
   //   return http
@@ -133,15 +137,15 @@ class PhotosLibraryApiClient {
   //   );
   // }
 
-  Future<String> uploadMediaItem(File image) async {
-    // TODO(codelab): Implement this method.
-
-    // Get the filename of the image
-
-    // Set up the headers required for this request.
-
-    // Make the HTTP request to upload the image. The file is sent in the body.
-  }
+  // Future<String> uploadMediaItem(File image) async {
+  //   // TODO(codelab): Implement this method.
+  //
+  //   // Get the filename of the image
+  //
+  //   // Set up the headers required for this request.
+  //
+  //   // Make the HTTP request to upload the image. The file is sent in the body.
+  // }
 
   // Future<SearchMediaItemsResponse> searchMediaItems(
   //     SearchMediaItemsRequest request) async {

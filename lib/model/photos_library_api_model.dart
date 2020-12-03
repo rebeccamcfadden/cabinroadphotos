@@ -17,6 +17,8 @@
 import 'dart:collection';
 import 'dart:io';
 
+import 'package:cabinroadphotos2/photos_library_api/album.dart';
+import 'package:cabinroadphotos2/photos_library_api/list_albums_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/photos_library_api/api_client.dart';
@@ -34,13 +36,13 @@ class PhotosLibraryApiModel extends Model {
         client = null;
       }
       // Reinitialize the albums
-      // updateAlbums();
+      updateAlbums();
 
       notifyListeners();
     });
   }
 
-  // final LinkedHashSet<Album> _albums = LinkedHashSet<Album>();
+  final LinkedHashSet<Album> _albums = LinkedHashSet<Album>();
   bool hasAlbums = false;
   PhotosLibraryApiClient client;
 
@@ -139,38 +141,38 @@ class PhotosLibraryApiModel extends Model {
   //   // media item.
   // }
   //
-  // UnmodifiableListView<Album> get albums =>
-  //     UnmodifiableListView<Album>(_albums ?? <Album>[]);
-  //
-  // void updateAlbums() async {
-  //   // Reset the flag before loading new albums
-  //   hasAlbums = false;
-  //
-  //   // Clear all albums
-  //   _albums.clear();
-  //
-  //   // Skip if not signed in
-  //   if (!isLoggedIn()) {
-  //     return;
-  //   }
-  //
-  //   // Add albums from the user's Google Photos account
-  //   var ownedAlbums = await _loadAlbums();
-  //   if (ownedAlbums != null) {
-  //     _albums.addAll(ownedAlbums);
-  //   }
-  //
-  //   /*
-  //   // Load albums from owned and shared albums
-  //   final List<List<Album>> list =
-  //   await Future.wait([_loadSharedAlbums(), _loadAlbums()]);
-  //
-  //   _albums.addAll(list.expand((a) => a ?? []));
-  //   */
-  //
-  //   notifyListeners();
-  //   hasAlbums = true;
-  // }
+  UnmodifiableListView<Album> get albums =>
+      UnmodifiableListView<Album>(_albums ?? <Album>[]);
+
+  void updateAlbums() async {
+    // Reset the flag before loading new albums
+    hasAlbums = false;
+
+    // Clear all albums
+    _albums.clear();
+
+    // Skip if not signed in
+    if (!isLoggedIn()) {
+      return;
+    }
+
+    // Add albums from the user's Google Photos account
+    var ownedAlbums = await _loadAlbums();
+    if (ownedAlbums != null) {
+      _albums.addAll(ownedAlbums);
+    }
+
+    /*
+    // Load albums from owned and shared albums
+    final List<List<Album>> list =
+    await Future.wait([_loadSharedAlbums(), _loadAlbums()]);
+
+    _albums.addAll(list.expand((a) => a ?? []));
+    */
+
+    notifyListeners();
+    hasAlbums = true;
+  }
   //
   // /// Load Albums into the model by retrieving the list of all albums shared
   // /// with the user.
@@ -182,13 +184,13 @@ class PhotosLibraryApiModel extends Model {
   //   );
   // }
   //
-  // /// Load albums into the model by retrieving the list of all albums owned
-  // /// by the user.
-  // Future<List<Album>> _loadAlbums() {
-  //   return client.listAlbums().then(
-  //         (ListAlbumsResponse response) {
-  //       return response.albums;
-  //     },
-  //   );
-  // }
+  /// Load albums into the model by retrieving the list of all albums owned
+  /// by the user.
+  Future<List<Album>> _loadAlbums() {
+    return client.listAlbums().then(
+          (ListAlbumsResponse response) {
+        return response.albums;
+      },
+    );
+  }
 }
