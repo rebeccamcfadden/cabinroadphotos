@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:cabinroadphotos2/components/app_bar.dart';
+import 'package:cabinroadphotos2/pages/fullscreen_img_page.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +16,6 @@ class AlbumGalleryPage extends StatefulWidget {
   const AlbumGalleryPage({Key key, this.searchResponse, this.album}) : super(key: key);
 
   final Future<SearchMediaItemsResponse> searchResponse;
-
   final Album album;
 
   @override
@@ -201,9 +203,23 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
 
 //
   List<Widget> _buildMediaItems(List<MediaItem> mediaItems) {
-    return mediaItems.map((mediaItem) =>
-        Container(
-            child: ClipRRect(
+    DoubleLinkedQueue<MediaItem> mediaQueue = DoubleLinkedQueue.of(mediaItems);
+    return mediaItems.asMap().entries.map((entry) {
+        int idx = entry.key;
+        MediaItem mediaItem = entry.value;
+        return Container(
+          child: InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => FullscreenImgPage(
+                    album: mediaQueue,
+                    ind: idx,
+                    tag: mediaItem.id,
+                  ),
+                ),
+              ),
+              child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 child: Column(
                     children: <Widget>[
@@ -229,7 +245,9 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
                       ),
                     ])
             )
-        )
+          )
+        );
+      }
     ).toList();
   }
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import 'dart:collection';
+
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cabinroadphotos2/photos_library_api/media_item.dart';
 
@@ -29,5 +31,6 @@ class SearchMediaItemsResponse {
   Map<String, dynamic> toJson() => _$SearchMediaItemsResponseToJson(this);
 
   List<MediaItem> mediaItems;
+  DoubleLinkedQueue<MediaItem> mediaQueue;
   String nextPageToken;
 }

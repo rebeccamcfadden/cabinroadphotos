@@ -173,52 +173,7 @@ class AlbumDisplayPage extends StatelessWidget {
       },
     );
   }
-//
-//   Widget _buildButtons(BuildContext context) {
-//     return Container(
-//       padding: const EdgeInsets.all(30),
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         children: <Widget>[
-//           PrimaryRaisedButton(
-//             onPressed: () {
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (BuildContext context) => CreateTripPage(),
-//                 ),
-//               );
-//             },
-//             label: const Text('CREATE A TRIP ALBUM'),
-//           ),
-//           Container(
-//             padding: const EdgeInsets.only(top: 10),
-//             child: Text(
-//               ' - or - ',
-//               style: TextStyle(
-//                 color: Colors.grey,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//           ),
-//           FlatButton(
-//             textColor: Colors.green[800],
-//             onPressed: () {
-//               Navigator.push(
-//                 context,
-//                 MaterialPageRoute(
-//                   builder: (BuildContext context) => JoinTripPage(),
-//                 ),
-//               );
-//             },
-//             child: const Text('JOIN A TRIP ALBUM'),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
+
   Widget _buildSharedIcon(Album album) {
     print("Share info for " + album.title + " is " + album.shareInfo.toString());
     if (album.shareInfo != null) {
