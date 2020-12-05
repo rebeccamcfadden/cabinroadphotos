@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:cabinroadphotos2/components/app_bar.dart';
 import 'package:cabinroadphotos2/pages/fullscreen_img_page.dart';
+import 'package:cabinroadphotos2/pages/slideshow_page.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ import 'package:cabinroadphotos2/photos_library_api/album.dart';
 import 'package:cabinroadphotos2/photos_library_api/media_item.dart';
 
 class AlbumGalleryPage extends StatefulWidget {
-  const AlbumGalleryPage({Key key, this.searchResponse, this.album}) : super(key: key);
+  const AlbumGalleryPage({Key key, this.searchResponse, this.album})
+      : super(key: key);
 
   final Future<SearchMediaItemsResponse> searchResponse;
   final Album album;
@@ -35,28 +37,37 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PhotoAppBar(),
+      floatingActionButton: FutureBuilder<SearchMediaItemsResponse>(
+        future: searchResponse,
+        builder: _buildSlideshowButton,
+      ),
       body: Builder(builder: (BuildContext context) {
-        return ListView(
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[Text(
-                album.title ?? '[no title]',
-                style: TextStyle(
-                  fontSize: 36,
+        return Stack(children: <Widget>[
+          ListView(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              shrinkWrap: false,
+              children: <Widget>[
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      album.title ?? '[no title]',
+                      style: TextStyle(
+                        fontSize: 36,
+                      ),
+                    )
+                  ],
                 ),
-              )
-              ],
-            ),
-            FutureBuilder<SearchMediaItemsResponse>(
-              future: searchResponse,
-              builder: _buildMediaItemList,
-            )
-          ],
-        );
+                FutureBuilder<SearchMediaItemsResponse>(
+                  future: searchResponse,
+                  builder: _buildMediaItemList,
+                ),
+              ]
+          ),
+
+        ]);
       }),
     );
   }
@@ -163,8 +174,8 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
 //     ]);
 //   }
 //
-  Widget _buildMediaItemList(BuildContext context,
-      AsyncSnapshot<SearchMediaItemsResponse> snapshot) {
+  Widget _buildMediaItemList(
+      BuildContext context, AsyncSnapshot<SearchMediaItemsResponse> snapshot) {
     if (snapshot.hasData) {
       if (snapshot.data.mediaItems == null) {
         return Container();
@@ -181,14 +192,11 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
                       crossAxisCount: 7,
                       childAspectRatio: 1,
                       crossAxisSpacing: 10,
-                      mainAxisSpacing: 10
-                  ),
+                      mainAxisSpacing: 10),
                   delegate: SliverChildListDelegate(
                       _buildMediaItems(snapshot.data.mediaItems)),
                 )
-              ]
-          )
-      );
+              ]));
     }
 
     if (snapshot.hasError) {
@@ -205,50 +213,97 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
   List<Widget> _buildMediaItems(List<MediaItem> mediaItems) {
     DoubleLinkedQueue<MediaItem> mediaQueue = DoubleLinkedQueue.of(mediaItems);
     return mediaItems.asMap().entries.map((entry) {
-        int idx = entry.key;
-        MediaItem mediaItem = entry.value;
-        return Container(
+      int idx = entry.key;
+      MediaItem mediaItem = entry.value;
+      return Container(
           child: InkWell(
               onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => FullscreenImgPage(
-                    album: mediaQueue,
-                    ind: idx,
-                    tag: mediaItem.id,
-                  ),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                child: Column(
-                    children: <Widget>[
-                      Center(
-                        child: AspectRatio(
-                            aspectRatio: 1,
-                            child: CachedNetworkImage(
-                              // width: 50,
-                              // height: 50,
-                              fit: BoxFit.cover,
-                              imageUrl: '${mediaItem.baseUrl}=w400',
-                              progressIndicatorBuilder: (context, url,
-                                  downloadProgress) =>
-                                  CircularProgressIndicator(
-                                      value: downloadProgress.progress),
-                              errorWidget: (BuildContext context, String url,
-                                  Object error) {
-                                print(error);
-                                return const Icon(Icons.error);
-                              },
-                            )
-                        ),
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => FullscreenImgPage(
+                        albumQueue: mediaQueue,
+                        ind: idx,
+                        // tag: mediaItem.id,
                       ),
-                    ])
-            )
-          )
-        );
-      }
-    ).toList();
+                    ),
+                  ),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  child: Column(children: <Widget>[
+                    Center(
+                      child: AspectRatio(
+                          aspectRatio: 1,
+                          child: CachedNetworkImage(
+                            // width: 50,
+                            // height: 50,
+                            fit: BoxFit.cover,
+                            imageUrl: '${mediaItem.baseUrl}=w400',
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (BuildContext context, String url,
+                                Object error) {
+                              print(error);
+                              return const Icon(Icons.error);
+                            },
+                          )),
+                    ),
+                  ]))));
+    }).toList();
+  }
+}
+
+Widget _buildSlideshowButton(
+    BuildContext context, AsyncSnapshot<SearchMediaItemsResponse> snapshot) {
+  if (snapshot.hasData) {
+    if (snapshot.data.mediaItems == null) {
+      return Container(width: 0.0, height: 0.0);
+    }
+    DoubleLinkedQueue<MediaItem> mediaQueue = DoubleLinkedQueue.of(snapshot.data.mediaItems);
+
+    return _SlideshowButton(visible: true,
+      onSlideshowPressed: () =>
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  SlideshowPage(
+                    albumQueue: mediaQueue,
+                    // album: album,
+                    ind: 0,
+                  ),
+            ),
+          ),
+    );
+  }
+  return Container(width: 0.0, height: 0.0);
+}
+
+class _SlideshowButton extends StatelessWidget {
+  final bool visible;
+  final VoidCallback onSlideshowPressed;
+
+  const _SlideshowButton({
+    Key key,
+    @required this.visible,
+    @required this.onSlideshowPressed,
+  })  : assert(visible != null),
+        assert(onSlideshowPressed != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return
+            FloatingActionButton.extended(
+              heroTag: 'slideshow_button',
+              onPressed: onSlideshowPressed,
+              materialTapTargetSize: MaterialTapTargetSize.padded,
+              backgroundColor: Colors.green,
+              label: Text(
+                "Start Slideshow",
+              ),
+            );
   }
 }
 

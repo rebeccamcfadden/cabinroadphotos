@@ -8,32 +8,25 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cabinroadphotos2/photos_library_api/media_item.dart';
 
-class FullscreenImgPage extends StatefulWidget {
-  const FullscreenImgPage({Key key, this.ind, this.albumQueue})
+class SlideshowPage extends StatefulWidget {
+  const SlideshowPage({Key key, this.ind, this.album, this.albumQueue})
       : super(key: key);
 
   final int ind;
+  final Album album;
   final DoubleLinkedQueue<MediaItem> albumQueue;
 
   @override
   State<StatefulWidget> createState() =>
-      _FullscreenImgPageState(index: ind, albumQueue: albumQueue);
+      _SlideshowPageState(index: ind, album: album, albumQueue: albumQueue);
 }
 
-class _FullscreenImgPageState extends State<FullscreenImgPage> {
-  _FullscreenImgPageState({this.index, this.albumQueue});
+class _SlideshowPageState extends State<SlideshowPage> {
+  _SlideshowPageState({this.index, this.album, this.albumQueue});
 
   DoubleLinkedQueue<MediaItem> albumQueue;
-  SwiperController _controller;
+  Album album;
   int index;
-
-  @override
-  void initState() {
-    _controller = new SwiperController();
-    super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => _controller.move(index, animation: false));
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,10 +48,11 @@ class _FullscreenImgPageState extends State<FullscreenImgPage> {
                   );
                 },
                 indicatorLayout: PageIndicatorLayout.COLOR,
+                autoplay: true,
+                autoplayDelay: 70000,
                 itemCount: albumQueue.length,
                 pagination: new SwiperPagination(),
                 control: new SwiperControl(),
-                controller: _controller,
               ),
               // body: GestureDetector(
               //   child: Center(
