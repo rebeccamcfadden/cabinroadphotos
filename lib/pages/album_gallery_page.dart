@@ -41,6 +41,7 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
         future: searchResponse,
         builder: _buildSlideshowButton,
       ),
+      bottomNavigationBar: null,
       body: Builder(builder: (BuildContext context) {
         return Stack(children: <Widget>[
           ListView(
@@ -220,9 +221,10 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
               onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => FullscreenImgPage(
+                      builder: (BuildContext context) => SlideshowPage(
                         albumQueue: mediaQueue,
                         ind: idx,
+                        isSlideshow: false,
                         // tag: mediaItem.id,
                       ),
                     ),
@@ -272,6 +274,7 @@ Widget _buildSlideshowButton(
                     albumQueue: mediaQueue,
                     // album: album,
                     ind: 0,
+                    isSlideshow: true,
                   ),
             ),
           ),
