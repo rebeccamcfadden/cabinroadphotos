@@ -1,8 +1,10 @@
 import 'dart:collection';
 
 import 'package:cabinroadphotos2/components/app_bar.dart';
-import 'package:cabinroadphotos2/pages/fullscreen_img_page.dart';
+import 'package:cabinroadphotos2/components/contribute_photo_dialog.dart';
+import 'package:cabinroadphotos2/components/primary_raised_button.dart';
 import 'package:cabinroadphotos2/pages/slideshow_page.dart';
+import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +39,27 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PhotoAppBar(),
-      floatingActionButton: FutureBuilder<SearchMediaItemsResponse>(
-        future: searchResponse,
-        builder: _buildSlideshowButton,
+      floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget> [
+          FloatingActionButton.extended(
+            heroTag: 'add_photo_button',
+            onPressed: () => _contributePhoto(context),
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            backgroundColor: Colors.green,
+            icon: Icon(
+              Icons.add,
+            ),
+            label: Text(
+              "Add Photo"
+            )
+          ),
+          SizedBox(width: 20),
+          FutureBuilder<SearchMediaItemsResponse>(
+            future: searchResponse,
+            builder: _buildSlideshowButton,
+          )
+        ]
       ),
       bottomNavigationBar: null,
       body: Builder(builder: (BuildContext context) {
@@ -134,21 +154,21 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
 //         });
 //   }
 //
-//   void _contributePhoto(BuildContext context) {
-//     setState(() {
-//       searchResponse = showDialog<ContributePhotoResult>(
-//           context: context,
-//           builder: (BuildContext context) {
-//             return ContributePhotoDialog();
-//           }).then((ContributePhotoResult result) {
-//         return ScopedModel.of<PhotosLibraryApiModel>(context)
-//             .createMediaItem(result.uploadToken, album.id, result.description);
-//       }).then((BatchCreateMediaItemsResponse response) {
-//         return ScopedModel.of<PhotosLibraryApiModel>(context)
-//             .searchMediaItems(album.id);
-//       });
-//     });
-//   }
+  void _contributePhoto(BuildContext context) {
+    setState(() {
+      searchResponse = showDialog<ContributePhotoResult>(
+          context: context,
+          builder: (BuildContext context) {
+            return ContributePhotoDialog();
+          }).then((ContributePhotoResult result) {
+        return ScopedModel.of<PhotosLibraryApiModel>(context)
+            .createMediaItem(result.uploadToken, album.id, result.description);
+      }).then((BatchCreateMediaItemsResponse response) {
+        return ScopedModel.of<PhotosLibraryApiModel>(context)
+            .searchMediaItems(album.id);
+      });
+    });
+  }
 //
 //   Widget _buildShareButtons(BuildContext context) {
 //     if (_inSharingApiCall) {
@@ -310,10 +330,10 @@ class _SlideshowButton extends StatelessWidget {
   }
 }
 
-//
-// class ContributePhotoResult {
-//   ContributePhotoResult(this.uploadToken, this.description);
-//
-//   String uploadToken;
-//   String description;
-// }
+
+class ContributePhotoResult {
+  ContributePhotoResult(this.uploadToken, this.description);
+
+  String uploadToken;
+  String description;
+}

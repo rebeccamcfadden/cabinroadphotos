@@ -38,6 +38,7 @@ dependencies:
   photo_view:
   flutter_swiper: ^1.1.6
   flutter_page_indicator:
+  image_picker: ^0.6.6+5
 
 dev_dependencies:
   flutter_test:

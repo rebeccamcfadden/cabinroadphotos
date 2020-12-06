@@ -18,11 +18,16 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:cabinroadphotos2/photos_library_api/album.dart';
+import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_request.dart';
+import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_response.dart';
+import 'package:cabinroadphotos2/photos_library_api/create_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/get_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/list_albums_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/list_shared_albums_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
+import 'package:cabinroadphotos2/photos_library_api/share_album_request.dart';
+import 'package:cabinroadphotos2/photos_library_api/share_album_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/photos_library_api/api_client.dart';
@@ -89,11 +94,14 @@ class PhotosLibraryApiModel extends Model {
     print('User signed in silently.');
   }
 
-  // Future<Album> createAlbum(String title) async {
-  //   // TODO(codelab): Implement this call.
-  //
-  //   return null;
-  // }
+  Future<Album> createAlbum(String title) async {
+    return client
+        .createAlbum(CreateAlbumRequest.fromTitle(title))
+        .then((Album album) {
+      updateAlbums();
+      return album;
+    });
+  }
   //
   Future<Album> getAlbum(String id) async {
     return client
@@ -112,14 +120,14 @@ class PhotosLibraryApiModel extends Model {
   //   });
   // }
   //
-  // Future<ShareAlbumResponse> shareAlbum(String id) async {
-  //   return client
-  //       .shareAlbum(ShareAlbumRequest.defaultOptions(id))
-  //       .then((ShareAlbumResponse response) {
-  //     updateAlbums();
-  //     return response;
-  //   });
-  // }
+  Future<ShareAlbumResponse> shareAlbum(String id) async {
+    return client
+        .shareAlbum(ShareAlbumRequest.defaultOptions(id))
+        .then((ShareAlbumResponse response) {
+      updateAlbums();
+      return response;
+    });
+  }
   //
   Future<SearchMediaItemsResponse> searchMediaItems(String albumId) async {
     return client
@@ -129,21 +137,26 @@ class PhotosLibraryApiModel extends Model {
     });
   }
   //
-  // Future<String> uploadMediaItem(File image) {
-  //   return client.uploadMediaItem(image);
-  // }
-  //
-  // Future<BatchCreateMediaItemsResponse> createMediaItem(
-  //     String uploadToken, String albumId, String description) {
-  //   // TODO(codelab): Implement this method.
-  //
-  //   return null;
-  //
-  //   // Construct the request with the token, albumId and description.
-  //
-  //   // Make the API call to create the media item. The response contains a
-  //   // media item.
-  // }
+  Future<String> uploadMediaItem(File image) {
+    return client.uploadMediaItem(image);
+  }
+
+  Future<BatchCreateMediaItemsResponse> createMediaItem(
+      String uploadToken, String albumId, String description) {
+    // Construct the request with the token, albumId and description.
+    final BatchCreateMediaItemsRequest request =
+    BatchCreateMediaItemsRequest.inAlbum(uploadToken, albumId, description);
+
+    // Make the API call to create the media item. The response contains a
+    // media item.
+    return client
+        .batchCreateMediaItems(request)
+        .then((BatchCreateMediaItemsResponse response) {
+      // Print and return the response.
+      print(response.newMediaItemResults[0].toJson());
+      return response;
+    });
+  }
   //
   UnmodifiableListView<Album> get albums =>
       UnmodifiableListView<Album>(_albums ?? <Album>[]);

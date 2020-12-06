@@ -1,4 +1,6 @@
+import 'package:cabinroadphotos2/components/contribute_photo_dialog.dart';
 import 'package:cabinroadphotos2/photos_library_api/album.dart';
+import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_response.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:gallery_view/gallery_view.dart';
@@ -9,6 +11,7 @@ import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
 import 'package:cabinroadphotos2/components/app_bar.dart';
 
 import 'album_gallery_page.dart';
+import 'create_album_page.dart';
 
 class AlbumDisplayPage extends StatelessWidget {
   @override
@@ -21,10 +24,9 @@ class AlbumDisplayPage extends StatelessWidget {
   }
 
   Widget _viewAlbums(BuildContext context) {
-    return ScopedModelDescendant<PhotosLibraryApiModel>(
-      builder: (BuildContext context, Widget child,
-          PhotosLibraryApiModel photosLibraryApi)
-    {
+    return ScopedModelDescendant<PhotosLibraryApiModel>(builder:
+        (BuildContext context, Widget child,
+            PhotosLibraryApiModel photosLibraryApi) {
       if (!photosLibraryApi.hasAlbums) {
         return Center(
           child: const CircularProgressIndicator(),
@@ -44,7 +46,7 @@ class AlbumDisplayPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "You don't have any albums to display. "
-                    'Create a new album or join an existing one in Google Photos.',
+                'Create a new album or join an existing one in Google Photos.',
                 style: TextStyle(color: Colors.grey[600], fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -54,20 +56,20 @@ class AlbumDisplayPage extends StatelessWidget {
         );
       }
 
-      return Container(
-          child: Column(children: <Widget>[
+      return Scaffold(
+          floatingActionButton: _createAlbumButton(context),
+          body: Column(children: <Widget>[
             SizedBox(height: 20),
-            Text("Select an Album:",
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
+            Text(
+              "Select an Album:",
+              style: Theme.of(context).textTheme.headline4,
             ),
             SizedBox(height: 20),
             CarouselSlider.builder(
               itemCount: photosLibraryApi.albums.length,
               itemBuilder: (BuildContext context, int index) {
-                return _buildAlbumSliders(context, photosLibraryApi.albums[index], photosLibraryApi);
+                return _buildAlbumSliders(
+                    context, photosLibraryApi.albums[index], photosLibraryApi);
               },
               options: CarouselOptions(
                 autoPlay: true,
@@ -79,22 +81,20 @@ class AlbumDisplayPage extends StatelessWidget {
                 enableInfiniteScroll: false,
               ),
             ),
-          ])
-      );
+          ]));
     });
   }
 
   Widget _buildAlbumSliders(BuildContext context, Album sharedAlbum,
-  PhotosLibraryApiModel photosLibraryApi) {
+      PhotosLibraryApiModel photosLibraryApi) {
     return Container(
-        child: InkWell(
-          onTap: () => Navigator.push(
+      child: InkWell(
+        onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
             builder: (BuildContext context) => AlbumGalleryPage(
               album: sharedAlbum,
-              searchResponse:
-              photosLibraryApi.searchMediaItems(sharedAlbum.id),
+              searchResponse: photosLibraryApi.searchMediaItems(sharedAlbum.id),
             ),
           ),
         ),
@@ -122,26 +122,28 @@ class AlbumDisplayPage extends StatelessWidget {
                           end: Alignment.topCenter,
                         ),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      _buildSharedIcon(sharedAlbum),
-                      Align(
-                        alignment: const FractionalOffset(0, 0.5),
-                        child: Text(
-                          sharedAlbum.title ?? '[no title]',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ]),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 20.0),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            _buildSharedIcon(sharedAlbum),
+                            Align(
+                              alignment: const FractionalOffset(0, 0.5),
+                              child: Text(
+                                sharedAlbum.title ?? '[no title]',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ]),
                     ),
                   ),
                 ],
-              )
-          ),
+              )),
         ),
       ),
     );
@@ -175,7 +177,8 @@ class AlbumDisplayPage extends StatelessWidget {
   }
 
   Widget _buildSharedIcon(Album album) {
-    print("Share info for " + album.title + " is " + album.shareInfo.toString());
+    print(
+        "Share info for " + album.title + " is " + album.shareInfo.toString());
     if (album.shareInfo != null) {
       return const Padding(
           padding: EdgeInsets.only(right: 8),
@@ -187,4 +190,45 @@ class AlbumDisplayPage extends StatelessWidget {
       return Container();
     }
   }
+
+  Widget _createAlbumButton(BuildContext context) {
+    return ScopedModelDescendant<PhotosLibraryApiModel>(builder:
+        (BuildContext context, Widget child,
+            PhotosLibraryApiModel photosLibraryApi) {
+      return _CreateAlbumButton(
+          visible: true,
+          createAlbumPressed: () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return CreateAlbumPage();
+              }));
+    });
+  }
 }
+
+class _CreateAlbumButton extends StatelessWidget {
+  final bool visible;
+  final VoidCallback createAlbumPressed;
+
+  const _CreateAlbumButton({
+    Key key,
+    @required this.visible,
+    @required this.createAlbumPressed,
+  })  : assert(visible != null),
+        assert(createAlbumPressed != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton.extended(
+      heroTag: 'create_album_button',
+      onPressed: createAlbumPressed,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      backgroundColor: Colors.green,
+      label: Text(
+        "Create Album",
+      ),
+    );
+  }
+}
+
