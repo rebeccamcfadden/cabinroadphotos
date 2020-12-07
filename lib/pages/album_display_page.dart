@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:gallery_view/gallery_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
 import 'package:cabinroadphotos2/components/app_bar.dart';
@@ -14,6 +15,18 @@ import 'album_gallery_page.dart';
 import 'create_album_page.dart';
 
 class AlbumDisplayPage extends StatelessWidget {
+  final RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  // void _onLoading() async {
+  //   // monitor network fetch
+  //   await Future.delayed(Duration(milliseconds: 1000));
+  //   // if failed,use loadFailed(),if no data return,use LoadNodata()
+  //   items.add((items.length + 1).toString());
+  //   if (mounted) setState(() {});
+  //   _refreshController.loadComplete();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,30 +71,39 @@ class AlbumDisplayPage extends StatelessWidget {
 
       return Scaffold(
           floatingActionButton: _createAlbumButton(context),
-          body: Column(children: <Widget>[
-            SizedBox(height: 20),
-            Text(
-              "Select an Album:",
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            SizedBox(height: 20),
-            CarouselSlider.builder(
-              itemCount: photosLibraryApi.albums.length,
-              itemBuilder: (BuildContext context, int index) {
-                return _buildAlbumSliders(
-                    context, photosLibraryApi.albums[index], photosLibraryApi);
-              },
-              options: CarouselOptions(
-                autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 20),
-                autoPlayAnimationDuration: const Duration(seconds: 1),
-                aspectRatio: 2.5,
-                viewportFraction: 0.6,
-                enlargeCenterPage: true,
-                enableInfiniteScroll: false,
+          body: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: false,
+            controller: _refreshController,
+            header: WaterDropHeader(),
+            onRefresh: () async {
+              photosLibraryApi.updateAlbums();
+              _refreshController.refreshCompleted();
+            },
+            child: Column(children: <Widget>[
+              SizedBox(height: 20),
+              Text(
+                "Select an Album:",
+                style: Theme.of(context).textTheme.headline4,
               ),
+              SizedBox(height: 20),
+              CarouselSlider.builder(
+                itemCount: photosLibraryApi.albums.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return _buildAlbumSliders(
+                      context, photosLibraryApi.albums[index], photosLibraryApi);
+                },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  autoPlayInterval: const Duration(seconds: 20),
+                  autoPlayAnimationDuration: const Duration(seconds: 1),
+                  aspectRatio: 2.5,
+                  viewportFraction: 0.6,
+                  enlargeCenterPage: true,
+                  enableInfiniteScroll: false,
+                ),
             ),
-          ]));
+          ])));
     });
   }
 
@@ -231,4 +253,3 @@ class _CreateAlbumButton extends StatelessWidget {
     );
   }
 }
-

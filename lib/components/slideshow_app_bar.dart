@@ -29,6 +29,7 @@ class SlideshowAppBar extends StatelessWidget implements PreferredSizeWidget {
         return AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
+          actions: _buildActions(apiModel, context),
         );
       },
     );
@@ -37,42 +38,6 @@ class SlideshowAppBar extends StatelessWidget implements PreferredSizeWidget {
   List<Widget> _buildActions(
       PhotosLibraryApiModel apiModel, BuildContext context) {
     final List<Widget> widgets = <Widget>[];
-
-    if (apiModel.isLoggedIn()) {
-      if (apiModel.user.photoUrl != null) {
-        widgets.add(Container(
-          child: CircleAvatar(
-            radius: 14,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: Image.network(
-                apiModel.user.photoUrl,
-              ),
-            ),
-          ),
-        ));
-      } else {
-        // Placeholder to use when there is no photo URL.
-        final List<String> placeholderCharSources = <String>[
-          apiModel.user.displayName,
-          apiModel.user.email,
-          '-',
-        ];
-        final String placeholderChar = placeholderCharSources
-            .firstWhere(
-                (String str) => str != null && str.trimLeft().isNotEmpty)
-            .trimLeft()[0]
-            .toUpperCase();
-
-        widgets.add(
-          Container(
-            height: 6,
-            child: CircleAvatar(
-              child: Text(placeholderChar),
-            ),
-          ),
-        );
-      }
 
       widgets.add(
         PopupMenuButton<_AppBarOverflowOptions>(
@@ -88,14 +53,13 @@ class SlideshowAppBar extends StatelessWidget implements PreferredSizeWidget {
           itemBuilder: (BuildContext context) {
             return <PopupMenuEntry<_AppBarOverflowOptions>>[
               PopupMenuItem<_AppBarOverflowOptions>(
-                value: _AppBarOverflowOptions.signout,
-                child: const Text('Disconnect from Google Photos'),
+                value: _AppBarOverflowOptions.settings,
+                child: const Text('Settings'),
               )
             ];
           },
         ),
       );
-    }
 
     return widgets;
   }
@@ -105,5 +69,5 @@ class SlideshowAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 enum _AppBarOverflowOptions {
-  signout,
+  settings,
 }

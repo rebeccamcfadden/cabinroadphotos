@@ -164,6 +164,7 @@ class PhotosLibraryApiModel extends Model {
   void updateAlbums() async {
     // Reset the flag before loading new albums
     hasAlbums = false;
+    print("updating albums");
 
     // Clear all albums
     _albums.clear();

@@ -33,6 +33,17 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
   Album album;
   Future<SearchMediaItemsResponse> searchResponse;
   bool _inSharingApiCall = false;
+  bool isWritable;
+
+  @override
+  initState() {
+    if(album.isWriteable != null) {
+      isWritable = album.isWriteable;
+    } else {
+      isWritable = false;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +53,7 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
       floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget> [
-          FloatingActionButton.extended(
+          if(isWritable) FloatingActionButton.extended(
             heroTag: 'add_photo_button',
             onPressed: () => _contributePhoto(context),
             materialTapTargetSize: MaterialTapTargetSize.padded,
