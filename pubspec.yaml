@@ -40,10 +40,19 @@ dependencies:
   flutter_page_indicator:
   image_picker: ^0.6.6+5
   pull_to_refresh: ^1.6.3
+  video_player:
+  shared_preferences_settings: 1.2.0
+  shared_preferences: ^0.5.12
+  system_settings: 1.0.0
+  screen: 0.0.5
+  connectivity: 2.0.2
+  flutter_settings_screens: 0.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  json_serializable:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -15,12 +15,14 @@
  */
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:cabinroadphotos2/photos_library_api/media_metadata.dart';
+import 'package:cabinroadphotos2/photos_library_api/contributor_data.dart';
 
 part 'media_item.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class MediaItem {
-  MediaItem(this.id, this.description, this.productUrl, this.baseUrl);
+  MediaItem(this.id, this.description, this.productUrl, this.baseUrl, this.mediaMetadata, this.contributorInfo);
 
   factory MediaItem.fromJson(Map<String, dynamic> json) =>
       _$MediaItemFromJson(json);
@@ -31,4 +33,6 @@ class MediaItem {
   String description;
   String productUrl;
   String baseUrl;
+  MediaMetadata mediaMetadata;
+  ContributorData contributorInfo;
 }

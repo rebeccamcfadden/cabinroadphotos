@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import 'package:cabinroadphotos2/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -93,19 +94,36 @@ class PhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
       widgets.add(
         PopupMenuButton<_AppBarOverflowOptions>(
           onSelected: (_AppBarOverflowOptions selection) async {
-            await apiModel.signOut();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => LoginPage(),
-              ),
-            );
+            switch(selection) {
+              case _AppBarOverflowOptions.signout:
+                await apiModel.signOut();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => LoginPage(),
+                  ),
+                );
+                break;
+              case _AppBarOverflowOptions.settings:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => SettingsPage(),
+                  ),
+                );
+                break;
+            }
+
           },
           itemBuilder: (BuildContext context) {
             return <PopupMenuEntry<_AppBarOverflowOptions>>[
               PopupMenuItem<_AppBarOverflowOptions>(
                 value: _AppBarOverflowOptions.signout,
                 child: const Text('Disconnect from Google Photos'),
+              ),
+              PopupMenuItem<_AppBarOverflowOptions>(
+                value: _AppBarOverflowOptions.settings,
+                child: const Text('Settings'),
               )
             ];
           },
@@ -122,4 +140,5 @@ class PhotoAppBar extends StatelessWidget implements PreferredSizeWidget {
 
 enum _AppBarOverflowOptions {
   signout,
+  settings
 }

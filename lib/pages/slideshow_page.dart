@@ -9,6 +9,9 @@ import 'package:flutter_page_indicator/flutter_page_indicator.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:cabinroadphotos2/photos_library_api/media_item.dart';
+import 'package:video_player/video_player.dart';
+
+import '../main.dart';
 
 class SlideshowPage extends StatefulWidget {
   const SlideshowPage({Key key, this.ind=0, this.albumQueue, this.isSlideshow})
@@ -51,7 +54,7 @@ class _SlideshowPageState extends State<SlideshowPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("build: " + showControls.toString());
+    // print("build: " + showControls.toString());
     return Scaffold(
         backgroundColor: Colors.black87,
         body: Stack(
@@ -62,14 +65,16 @@ class _SlideshowPageState extends State<SlideshowPage> {
               appBar: (showControls) ? SlideshowAppBar() : null,
               body: Swiper(
                 itemBuilder: (BuildContext context, int index) {
-                  return new Image.network(
-                    albumQueue.elementAt(index).baseUrl,
-                    fit: BoxFit.fitHeight,
-                  );
+                  return _buildImageTile(context, index);
+                  // print(albumQueue.elementAt(index).baseUrl);
+                  // return new Image.network(
+                  //   albumQueue.elementAt(index).baseUrl,
+                  //   fit: BoxFit.fitHeight,
+                  // );
                 },
                 indicatorLayout: PageIndicatorLayout.COLOR,
                 autoplay: true,
-                autoplayDelay: 70000,
+                autoplayDelay: (Preferences.local.getDouble("slideshowSpeed") * 1000).toInt(),
                 itemCount: albumQueue.length,
                 // pagination: _pagination,
                 control: new SwiperControl(
@@ -84,10 +89,88 @@ class _SlideshowPageState extends State<SlideshowPage> {
         ));
   }
 
+  Widget _buildImageTile(BuildContext context, int index) {
+    // print(albumQueue.elementAt(index).baseUrl);
+    MediaItem mediaItem = albumQueue.elementAt(index);
+    if(mediaItem.mediaMetadata.photo) {
+      return new Image.network(
+        albumQueue.elementAt(index).baseUrl,
+        fit: BoxFit.fitHeight,
+      );
+    } else {
+      print(albumQueue.elementAt(index).baseUrl + "=dv");
+      // TODO - cache/download videos for playing
+      return new VideoApp(
+        controller: new VideoPlayerController.network(albumQueue.elementAt(index).baseUrl),
+      );
+    }
+
+  }
+
   void _toggleControls(int num) {
-    print("tapped");
+    // print("tapped");
     setState((){
       showControls = !showControls;
     });
+  }
+}
+
+class VideoApp extends StatefulWidget {
+  final bool autoplay;
+  @required final VideoPlayerController controller;
+
+  const VideoApp({Key key, this.autoplay, this.controller}) : super(key: key);
+
+  @override
+  _VideoAppState createState() => _VideoAppState(controller: controller);
+}
+
+class _VideoAppState extends State<VideoApp> {
+  _VideoAppState({this.controller});
+  VideoPlayerController controller;
+  bool autoplay = Preferences.local.getBool("autoplay");
+  // String url;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Video Demo',
+      home: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: controller.value.initialized
+              ? AspectRatio(
+            aspectRatio: controller.value.aspectRatio,
+            child: VideoPlayer(controller),
+          )
+              : Container(),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              controller.value.isPlaying
+                  ? controller.pause()
+                  : controller.play();
+            });
+          },
+          backgroundColor: Colors.green[800],
+          child: Icon(
+            controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
   }
 }

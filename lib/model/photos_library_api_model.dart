@@ -17,6 +17,7 @@
 import 'dart:collection';
 import 'dart:io';
 
+import 'package:cabinroadphotos2/main.dart';
 import 'package:cabinroadphotos2/photos_library_api/album.dart';
 import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_response.dart';
@@ -31,6 +32,7 @@ import 'package:cabinroadphotos2/photos_library_api/share_album_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/photos_library_api/api_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PhotosLibraryApiModel extends Model {
   PhotosLibraryApiModel() {
@@ -48,12 +50,14 @@ class PhotosLibraryApiModel extends Model {
       updateAlbums();
 
       notifyListeners();
+
     });
   }
 
   final LinkedHashSet<Album> _albums = LinkedHashSet<Album>();
   bool hasAlbums = false;
   PhotosLibraryApiClient client;
+  // var sharedPreferences;
 
   GoogleSignInAccount _currentUser;
 
@@ -164,7 +168,7 @@ class PhotosLibraryApiModel extends Model {
   void updateAlbums() async {
     // Reset the flag before loading new albums
     hasAlbums = false;
-    print("updating albums");
+    // print("updating albums");
 
     // Clear all albums
     _albums.clear();

@@ -185,7 +185,6 @@ class PhotosLibraryApiClient {
           print(response.reasonPhrase);
           print(response.body);
         }
-        print(response.body);
 
         return SearchMediaItemsResponse.fromJson(jsonDecode(response.body));
       },

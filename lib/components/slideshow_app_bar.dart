@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import 'package:cabinroadphotos2/pages/settings_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/pages/login_page.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
@@ -43,10 +43,10 @@ class SlideshowAppBar extends StatelessWidget implements PreferredSizeWidget {
         PopupMenuButton<_AppBarOverflowOptions>(
           onSelected: (_AppBarOverflowOptions selection) async {
             await apiModel.signOut();
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (BuildContext context) => LoginPage(),
+                builder: (BuildContext context) => SettingsPage(),
               ),
             );
           },

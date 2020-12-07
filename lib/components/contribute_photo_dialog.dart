@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
-import 'package:cabinroadphotos2/pages/album_display_page.dart';
 // import 'package:cabinroadphotos2/util/to_be_implemented.dart';
 
 class ContributePhotoDialog extends StatefulWidget {
@@ -138,7 +137,7 @@ class _ContributePhotoDialogState extends State<ContributePhotoDialog> {
   Future _getImage(BuildContext context) async {
     // Use the image_picker package to prompt the user for a photo from their
     // device.
-    print("getting image");
+    // print("getting image");
 
     final File image = await _imagePicker.getImage(
       source: ImageSource.gallery,

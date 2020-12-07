@@ -2,14 +2,11 @@ import 'dart:collection';
 
 import 'package:cabinroadphotos2/components/app_bar.dart';
 import 'package:cabinroadphotos2/components/contribute_photo_dialog.dart';
-import 'package:cabinroadphotos2/components/primary_raised_button.dart';
 import 'package:cabinroadphotos2/pages/slideshow_page.dart';
 import 'package:cabinroadphotos2/photos_library_api/batch_create_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:gallery_view/gallery_view.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
 import 'package:cabinroadphotos2/photos_library_api/album.dart';

@@ -19,6 +19,9 @@ import 'package:flutter/services.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
 import 'package:cabinroadphotos2/pages/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:screen/screen.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 void main() {
   final apiModel = PhotosLibraryApiModel();
@@ -40,6 +43,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cabin Road Photos',
       theme: _theme,
+      debugShowCheckedModeBanner: false,
       home: HomePage(),
     );
   }
@@ -65,4 +69,29 @@ ThemeData _buildTheme() {
     ),
     scaffoldBackgroundColor: Colors.white,
   );
+}
+
+class Preferences {
+  static SharedPreferences local;
+
+  /// Initializes the Shared Preferences and sets the info towards a global variable
+  static Future init() async {
+    print("getting settings");
+
+    local = await SharedPreferences.getInstance();
+
+    double brightness = await Screen.brightness;
+    print("Brightness: " + brightness.toString());
+    local.getBool("autoplay") == null
+        ? local.setBool("autoplay", false)
+        : print("autoplay set");
+    local.getDouble("slideshowSpeed") == null ? local.setDouble(
+        "slideshowSpeed", 60) : print("speed set");
+    local.getBool("photoNotifications") == null ? local.setBool(
+        "photoNotifications", true) : print("photoNotifications set");
+    local.getBool("albumNotifications") == null ? local.setBool(
+        "albumNotifications", true) : print("albumNotifications set");
+    local.getDouble("brightness") == null ? local.setDouble("brightness", brightness) : print(
+        "brightness set");
+  }
 }
