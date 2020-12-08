@@ -34,11 +34,13 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
 
   @override
   initState() {
+    print("init gallery");
     if(album.isWriteable != null) {
       isWritable = album.isWriteable;
     } else {
       isWritable = false;
     }
+    print("isWritable " + isWritable.toString());
     super.initState();
   }
 
