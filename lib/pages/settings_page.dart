@@ -6,6 +6,7 @@ import 'package:cabinroadphotos2/components/app_bar.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_settings/shared_preferences_settings.dart';
 
 // import 'package:flutter_settings_screens/flutter_settings_screens.dart';
@@ -22,15 +23,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   initState() {
-    _initializeSettings();
     super.initState();
-  }
-
-  Future _initializeSettings() async {
-    print("getting settings");
-    if (Preferences.local == null) {
-      await Preferences.init();
-    }
   }
 
   @override
@@ -40,24 +33,24 @@ class _SettingsPageState extends State<SettingsPage> {
         title: 'General',
         children: [
           SimpleSettingsTile(
-            title: 'Notifications',
-            screen: SettingsScreen(
-              title: 'Notifications settings',
-              children: [
-                SwitchSettingsTile(
-                    settingKey: 'photoNotifications',
-                    title: 'New photo notifications',
-                    defaultValue: Preferences.local.getBool("photoNotifications"),
-                    icon: Icon(Icons.photo)
-                ),
-                SwitchSettingsTile(
-                    settingKey: 'albumNotifications',
-                    title: 'New album notifications',
-                    defaultValue: Preferences.local.getBool("albumNotifications"),
-                    icon: Icon(Icons.photo_album)
-                ),
-              ],
-            )
+              title: 'Notifications',
+              screen: SettingsScreen(
+                title: 'Notifications settings',
+                children: [
+                  SwitchSettingsTile(
+                      settingKey: 'photoNotifications',
+                      title: 'New photo notifications',
+                      defaultValue: Preferences.local.getBool("photoNotifications"),
+                      icon: Icon(Icons.photo)
+                  ),
+                  SwitchSettingsTile(
+                      settingKey: 'albumNotifications',
+                      title: 'New album notifications',
+                      defaultValue: Preferences.local.getBool("albumNotifications"),
+                      icon: Icon(Icons.photo_album)
+                  ),
+                ],
+              )
           ),
           SwitchSettingsTile(
               settingKey: 'preventDim',
@@ -92,30 +85,30 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
       SettingsTileGroup(
-        title: "Slideshow",
-        children: [
-          SwitchSettingsTile(
-              settingKey: 'autoplay',
-              title: 'Autoplay videos',
-              defaultValue: Preferences.local.getBool("autoplay"),
-              icon: Icon(Icons.play_arrow)
-          ),
-          SliderSettingsTile(
-            settingKey: 'slideshowSpeed',
-            title: 'Slideshow speed (seconds)',
-            icon: Icon(Icons.speed),
-            minValue: 10.0,
-            maxValue: 600.0,
-            step: 5.0,
-            defaultValue: Preferences.local.getDouble("slideshowSpeed"),
-          ),
-        ]
+          title: "Slideshow",
+          children: [
+            SwitchSettingsTile(
+                settingKey: 'autoplay',
+                title: 'Autoplay videos',
+                defaultValue: Preferences.local.getBool("autoplay"),
+                icon: Icon(Icons.play_arrow)
+            ),
+            SliderSettingsTile(
+              settingKey: 'slideshowSpeed',
+              title: 'Slideshow speed (seconds)',
+              icon: Icon(Icons.speed),
+              minValue: 10.0,
+              maxValue: 600.0,
+              step: 5.0,
+              defaultValue: Preferences.local.getDouble("slideshowSpeed"),
+            ),
+          ]
       ),
       SettingsTileGroup(
-        title: "Authorized email addresses",
-        children: [
-          Text("TODO")
-        ]
+          title: "Authorized email addresses",
+          children: [
+            Text("TODO")
+          ]
       )
     ]);
   }

@@ -15,15 +15,6 @@ class AlbumDisplayPage extends StatelessWidget {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
-  // void _onLoading() async {
-  //   // monitor network fetch
-  //   await Future.delayed(Duration(milliseconds: 1000));
-  //   // if failed,use loadFailed(),if no data return,use LoadNodata()
-  //   items.add((items.length + 1).toString());
-  //   if (mounted) setState(() {});
-  //   _refreshController.loadComplete();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,8 +187,8 @@ class AlbumDisplayPage extends StatelessWidget {
   }
 
   Widget _buildSharedIcon(Album album) {
-    print(
-        "Share info for " + album.title + " is " + album.shareInfo.toString());
+    // print(
+    //     "Share info for " + album.title + " is " + album.shareInfo.toString());
     if (album.shareInfo != null) {
       return const Padding(
           padding: EdgeInsets.only(right: 8),

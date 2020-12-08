@@ -86,6 +86,15 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
                       style: TextStyle(
                         fontSize: 36,
                       ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.refresh),
+                      onPressed: () => {
+                        setState(() {
+                          searchResponse = ScopedModel.of<PhotosLibraryApiModel>(context)
+                              .searchMediaItems(album.id);
+                        })
+                      }
                     )
                   ],
                 ),
