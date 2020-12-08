@@ -17,6 +17,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cabinroadphotos2/photos_library_api/list_media_items_request.dart';
+import 'package:cabinroadphotos2/photos_library_api/list_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_request.dart';
@@ -187,6 +189,37 @@ class PhotosLibraryApiClient {
         }
 
         return SearchMediaItemsResponse.fromJson(jsonDecode(response.body));
+      },
+    );
+  }
+
+  Future<ListMediaItemsResponse> listMediaItems(
+      ListMediaItemsRequest request) async {
+    String queryParams = "";
+    if (request.pageSize != null) {
+      queryParams += "?pageSize=" + request.pageSize.toString();
+    }
+    if (request.pageToken != null) {
+      queryParams += (queryParams == "") ? "?" : "&";
+      queryParams += "pageToken=" + request.pageToken.toString();
+    }
+    String requestString = 'https://photoslibrary.googleapis.com/v1/mediaItems' + queryParams;
+    Map<String, String> headers = await _authHeaders;
+    print("requestString + headers: " + requestString + headers.toString());
+    return http
+        .get(
+      'https://photoslibrary.googleapis.com/v1/mediaItems' + queryParams,
+      headers: await _authHeaders,
+    )
+        .then(
+          (Response response) {
+            print(response.body);
+        if (response.statusCode != 200) {
+          print(response.reasonPhrase);
+          print(response.body);
+        }
+
+        return ListMediaItemsResponse.fromJson(jsonDecode(response.body));
       },
     );
   }

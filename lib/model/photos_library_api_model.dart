@@ -25,8 +25,11 @@ import 'package:cabinroadphotos2/photos_library_api/create_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/get_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/list_albums_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/list_shared_albums_response.dart';
+import 'package:cabinroadphotos2/photos_library_api/media_item.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
+import 'package:cabinroadphotos2/photos_library_api/list_media_items_request.dart';
+import 'package:cabinroadphotos2/photos_library_api/list_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -57,6 +60,8 @@ class PhotosLibraryApiModel extends Model {
   final LinkedHashSet<Album> _albums = LinkedHashSet<Album>();
   bool hasAlbums = false;
   PhotosLibraryApiClient client;
+  List<MediaItem> fullLibrary;
+  Album fullLibraryAlbum;
   // var sharedPreferences;
 
   GoogleSignInAccount _currentUser;
@@ -106,7 +111,7 @@ class PhotosLibraryApiModel extends Model {
       return album;
     });
   }
-  //
+
   Future<Album> getAlbum(String id) async {
     return client
         .getAlbum(GetAlbumRequest.defaultOptions(id))
@@ -114,16 +119,7 @@ class PhotosLibraryApiModel extends Model {
       return album;
     });
   }
-  //
-  // Future<JoinSharedAlbumResponse> joinSharedAlbum(String shareToken) {
-  //   return client
-  //       .joinSharedAlbum(JoinSharedAlbumRequest(shareToken))
-  //       .then((JoinSharedAlbumResponse response) {
-  //     updateAlbums();
-  //     return response;
-  //   });
-  // }
-  //
+
   Future<ShareAlbumResponse> shareAlbum(String id) async {
     return client
         .shareAlbum(ShareAlbumRequest.defaultOptions(id))
@@ -132,15 +128,26 @@ class PhotosLibraryApiModel extends Model {
       return response;
     });
   }
-  //
+
   Future<SearchMediaItemsResponse> searchMediaItems(String albumId) async {
+    if (albumId == "fullLibraryAlbum") {
+      return SearchMediaItemsResponse(fullLibrary, null);
+    }
     return client
         .searchMediaItems(SearchMediaItemsRequest.albumId(albumId))
         .then((SearchMediaItemsResponse response) {
       return response;
     });
   }
-  //
+
+  Future<ListMediaItemsResponse> listMediaItems() async {
+    return client
+        .listMediaItems(ListMediaItemsRequest.def())
+        .then((ListMediaItemsResponse response) {
+      return response;
+    });
+  }
+
   Future<String> uploadMediaItem(File image) {
     return client.uploadMediaItem(image);
   }
@@ -161,7 +168,7 @@ class PhotosLibraryApiModel extends Model {
       return response;
     });
   }
-  //
+
   UnmodifiableListView<Album> get albums =>
       UnmodifiableListView<Album>(_albums ?? <Album>[]);
 
@@ -189,15 +196,26 @@ class PhotosLibraryApiModel extends Model {
     final List<List<Album>> list =
     await Future.wait([_loadSharedAlbums(), _loadAlbums()]);
 
+    final ListMediaItemsResponse allMediaItems = await listMediaItems();
+    fullLibrary = allMediaItems.mediaItems;
+    fullLibraryAlbum = Album(
+      "fullLibraryAlbum",
+      "FULL LIBRARY",
+      null,
+      false,
+      null,
+      fullLibrary.length.toString(),
+      fullLibrary.first.baseUrl,
+      fullLibrary.first.id
+    );
+
     _albums.addAll(list.expand((a) => a ?? []));
-
-
-
+    _albums.add(fullLibraryAlbum);
 
     notifyListeners();
     hasAlbums = true;
   }
-  //
+
   // /// Load Albums into the model by retrieving the list of all albums shared
   // /// with the user.
   Future<List<Album>> _loadSharedAlbums() {
@@ -207,7 +225,7 @@ class PhotosLibraryApiModel extends Model {
       },
     );
   }
-  //
+
   /// Load albums into the model by retrieving the list of all albums owned
   /// by the user.
   Future<List<Album>> _loadAlbums() {

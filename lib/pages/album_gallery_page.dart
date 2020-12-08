@@ -216,6 +216,25 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
 //
   Widget _buildMediaItemList(
       BuildContext context, AsyncSnapshot<SearchMediaItemsResponse> snapshot) {
+    if (snapshot == null && album.id == "fullLibraryAlbum") {
+      return Container(
+          margin: EdgeInsets.all(20),
+          child: CustomScrollView(
+              shrinkWrap: true,
+              physics: ScrollPhysics(),
+              slivers: <Widget>[
+                SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 7,
+                      childAspectRatio: 1,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10),
+                  delegate: SliverChildListDelegate(
+                      _buildMediaItems(ScopedModel.of<PhotosLibraryApiModel>(context)
+                          .fullLibrary)),
+                )
+              ]));
+    }
     if (snapshot.hasData) {
       if (snapshot.data.mediaItems == null) {
         return Container();
@@ -240,7 +259,26 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
     }
 
     if (snapshot.hasError) {
-      print(snapshot.error);
+      print(" WE are here: " + snapshot.error);
+      if (snapshot.error.toString().contains('Invalid album ID')) {
+        return Container(
+            margin: EdgeInsets.all(20),
+            child: CustomScrollView(
+                shrinkWrap: true,
+                physics: ScrollPhysics(),
+                slivers: <Widget>[
+                  SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        childAspectRatio: 1,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10),
+                    delegate: SliverChildListDelegate(
+                        _buildMediaItems(ScopedModel.of<PhotosLibraryApiModel>(context)
+                            .fullLibrary)),
+                  )
+                ]));
+      }
       return Container();
     }
 
