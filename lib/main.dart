@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
@@ -7,11 +9,18 @@ import 'package:cabinroadphotos2/pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:screen/screen.dart';
 
-void main() => runApp(InitializationApp());
+// void main() => runApp(InitializationApp());
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(InitializationApp());
+}
 
 class InitializationApp extends StatelessWidget {
 
   final apiModel = PhotosLibraryApiModel();
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +50,7 @@ class InitializationApp extends StatelessWidget {
 
   _registerServices() async {
     print("starting registering services");
+    // await Firebase.initializeApp();
     apiModel.signInSilently();
     print("finished registering services");
   }

@@ -33,27 +33,57 @@ import 'package:cabinroadphotos2/photos_library_api/list_media_items_response.da
 import 'package:cabinroadphotos2/photos_library_api/share_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_response.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/photos_library_api/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PhotosLibraryApiModel extends Model {
   PhotosLibraryApiModel() {
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+    _googleSignIn.onCurrentUserChanged
+        .listen((GoogleSignInAccount account) async {
       _currentUser = account;
 
       if (_currentUser != null) {
         // Initialize the client with the new user credentials
         client = PhotosLibraryApiClient(_currentUser.authHeaders);
+
+        final GoogleSignInAuthentication googleSignInAuthentication =
+        await _currentUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+        final User firebaseUser = authResult.user;
+
+        if (firebaseUser != null) {
+          assert(!firebaseUser.isAnonymous);
+          assert(await firebaseUser.getIdToken() != null);
+
+          final User firebaseCurrentUser = _auth.currentUser;
+          assert(firebaseUser.uid == firebaseCurrentUser.uid);
+
+          print('signInWithGoogle succeeded: $firebaseUser');
+        } else {
+          return false;
+        }
+
+        functions = FirebaseFunctions.instance;
       } else {
         // Reset the client
         client = null;
       }
+
       // Reinitialize the albums
       updateAlbums();
 
       notifyListeners();
-
     });
   }
 
@@ -62,15 +92,21 @@ class PhotosLibraryApiModel extends Model {
   PhotosLibraryApiClient client;
   List<MediaItem> fullLibrary;
   Album fullLibraryAlbum;
+
   // var sharedPreferences;
 
   GoogleSignInAccount _currentUser;
+  FirebaseAuth _auth;
+  FirebaseFunctions functions;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>[
     'profile',
+    'email',
+    'https://www.googleapis.com/auth/gmail.modify',
     'https://www.googleapis.com/auth/photoslibrary',
     'https://www.googleapis.com/auth/photoslibrary.sharing'
   ]);
+
   GoogleSignInAccount get user => _currentUser;
 
   bool isLoggedIn() {
@@ -78,8 +114,8 @@ class PhotosLibraryApiModel extends Model {
   }
 
   Future<bool> signIn() async {
+    _auth = FirebaseAuth.instance;
     final GoogleSignInAccount user = await _googleSignIn.signIn();
-
     if (user == null) {
       // User could not be signed in
       print('User could not be signed in.');
@@ -95,6 +131,7 @@ class PhotosLibraryApiModel extends Model {
   }
 
   Future<void> signInSilently() async {
+    _auth = FirebaseAuth.instance;
     final GoogleSignInAccount user = await _googleSignIn.signInSilently();
     if (_currentUser == null) {
       // User could not be signed in
@@ -156,7 +193,7 @@ class PhotosLibraryApiModel extends Model {
       String uploadToken, String albumId, String description) {
     // Construct the request with the token, albumId and description.
     final BatchCreateMediaItemsRequest request =
-    BatchCreateMediaItemsRequest.inAlbum(uploadToken, albumId, description);
+        BatchCreateMediaItemsRequest.inAlbum(uploadToken, albumId, description);
 
     // Make the API call to create the media item. The response contains a
     // media item.
@@ -191,23 +228,21 @@ class PhotosLibraryApiModel extends Model {
       _albums.addAll(ownedAlbums);
     }
 
-
     // Load albums from owned and shared albums
     final List<List<Album>> list =
-    await Future.wait([_loadSharedAlbums(), _loadAlbums()]);
+        await Future.wait([_loadSharedAlbums(), _loadAlbums()]);
 
     final ListMediaItemsResponse allMediaItems = await listMediaItems();
     fullLibrary = allMediaItems.mediaItems;
     fullLibraryAlbum = Album(
-      "fullLibraryAlbum",
-      "FULL LIBRARY",
-      null,
-      false,
-      null,
-      fullLibrary.length.toString(),
-      fullLibrary.first.baseUrl,
-      fullLibrary.first.id
-    );
+        "fullLibraryAlbum",
+        "FULL LIBRARY",
+        null,
+        false,
+        null,
+        fullLibrary.length.toString(),
+        fullLibrary.first.baseUrl,
+        fullLibrary.first.id);
 
     _albums.addAll(list.expand((a) => a ?? []));
     _albums.add(fullLibraryAlbum);
@@ -220,7 +255,7 @@ class PhotosLibraryApiModel extends Model {
   // /// with the user.
   Future<List<Album>> _loadSharedAlbums() {
     return client.listSharedAlbums().then(
-          (ListSharedAlbumsResponse response) {
+      (ListSharedAlbumsResponse response) {
         return response.sharedAlbums;
       },
     );
@@ -230,7 +265,7 @@ class PhotosLibraryApiModel extends Model {
   /// by the user.
   Future<List<Album>> _loadAlbums() {
     return client.listAlbums().then(
-          (ListAlbumsResponse response) {
+      (ListAlbumsResponse response) {
         return response.albums;
       },
     );

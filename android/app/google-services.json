@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "132593150828",
+    "firebase_url": "https://photoframe-297121.firebaseio.com",
+    "project_id": "photoframe-297121",
+    "storage_bucket": "photoframe-297121.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132593150828:android:bdf19ca70254f5f78da149",
+        "android_client_info": {
+          "package_name": "cabinroad.photos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "132593150828-hh0h14h13j4l4h33j91s0nbr5ekarkj0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cabinroad.photos",
+            "certificate_hash": "6d6c50813c6b316da08d4b47ae18d19315f87c68"
+          }
+        },
+        {
+          "client_id": "132593150828-mtakgtv05dn76vean38feblj4esn6uqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsr7DgJuJT5e6R316APLhg5YuGMxL7a7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "132593150828-mtakgtv05dn76vean38feblj4esn6uqu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
