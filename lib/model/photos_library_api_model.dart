@@ -60,6 +60,7 @@ class PhotosLibraryApiModel extends Model {
 
         final UserCredential authResult =
         await _auth.signInWithCredential(credential);
+
         final User firebaseUser = authResult.user;
 
         if (firebaseUser != null) {
@@ -70,11 +71,18 @@ class PhotosLibraryApiModel extends Model {
           assert(firebaseUser.uid == firebaseCurrentUser.uid);
 
           print('signInWithGoogle succeeded: $firebaseUser');
-        } else {
-          return false;
-        }
+          functions = FirebaseFunctions.instance;
 
-        functions = FirebaseFunctions.instance;
+          functions.httpsCallable("helloWorld")
+              .call(<String, dynamic>{
+            "email": _currentUser.email,
+            "token": googleSignInAuthentication.accessToken,
+          }).then((v) {
+            print("RESULT: " + v.data);
+          }).catchError((e) {
+            print("ERROR: " + e.toString());
+          });
+        }
       } else {
         // Reset the client
         client = null;
@@ -99,13 +107,15 @@ class PhotosLibraryApiModel extends Model {
   FirebaseAuth _auth;
   FirebaseFunctions functions;
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: <String>[
-    'profile',
-    'email',
-    'https://www.googleapis.com/auth/gmail.modify',
-    'https://www.googleapis.com/auth/photoslibrary',
-    'https://www.googleapis.com/auth/photoslibrary.sharing'
-  ]);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: <String>[
+      'profile',
+      'email',
+      'https://www.googleapis.com/auth/gmail.modify',
+      'https://www.googleapis.com/auth/photoslibrary',
+      'https://www.googleapis.com/auth/photoslibrary.sharing'
+    ]
+  );
 
   GoogleSignInAccount get user => _currentUser;
 

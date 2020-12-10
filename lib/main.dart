@@ -25,7 +25,7 @@ class InitializationApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Initialization',
+      title: 'Cabin Road Photos',
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: initialize(),

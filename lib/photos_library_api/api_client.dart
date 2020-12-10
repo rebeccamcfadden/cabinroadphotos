@@ -205,7 +205,6 @@ class PhotosLibraryApiClient {
     }
     String requestString = 'https://photoslibrary.googleapis.com/v1/mediaItems' + queryParams;
     Map<String, String> headers = await _authHeaders;
-    print("requestString + headers: " + requestString + headers.toString());
     return http
         .get(
       'https://photoslibrary.googleapis.com/v1/mediaItems' + queryParams,
@@ -213,7 +212,7 @@ class PhotosLibraryApiClient {
     )
         .then(
           (Response response) {
-            print(response.body);
+            // print(response.body);
         if (response.statusCode != 200) {
           print(response.reasonPhrase);
           print(response.body);

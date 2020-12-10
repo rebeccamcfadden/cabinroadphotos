@@ -85,10 +85,10 @@ class AlbumDisplayPage extends StatelessWidget {
                   autoPlay: true,
                   autoPlayInterval: const Duration(seconds: 20),
                   autoPlayAnimationDuration: const Duration(seconds: 1),
-                  aspectRatio: 2.5,
-                  viewportFraction: 0.6,
+                  aspectRatio: 2.8,
+                  viewportFraction: 0.5,
                   enlargeCenterPage: true,
-                  enableInfiniteScroll: false,
+                  enableInfiniteScroll: true,
                 ),
             ),
           ])));
