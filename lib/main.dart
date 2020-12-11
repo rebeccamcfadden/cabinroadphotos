@@ -29,8 +29,8 @@ class InitializationApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: initialize(),
-        builder: (context, snapshot){
-          if (snapshot.connectionState == ConnectionState.done){
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
             return ScopedModel<PhotosLibraryApiModel>(
               model: apiModel,
               child: MyApp(),
@@ -71,7 +71,7 @@ class SplashScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(
-            "Initialization",
+            "Cabin Road Photos",
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -129,6 +129,9 @@ class Preferences {
   static Future init() async {
     double brightness = await Screen.brightness;
     // print("Brightness: " + brightness.toString());
+    local.getString("emailAddressToAdd") == null
+        ? local.setString("emailAddressToAdd", "") : print(
+        "emailAddressToAdd set");
     local.getBool("autoplay") == null
         ? local.setBool("autoplay", false)
         : print("autoplay set");
@@ -141,7 +144,8 @@ class Preferences {
         "photoNotifications", true) : print("photoNotifications set");
     local.getBool("albumNotifications") == null ? local.setBool(
         "albumNotifications", true) : print("albumNotifications set");
-    local.getDouble("brightness") == null ? local.setDouble("brightness", brightness) : print(
+    local.getDouble("brightness") == null ? local.setDouble(
+        "brightness", brightness) : print(
         "brightness set");
     local.getBool("preventDim") == null
         ? local.setBool("preventDim", true)

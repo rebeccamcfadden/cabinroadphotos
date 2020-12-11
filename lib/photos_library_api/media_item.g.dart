@@ -7,7 +7,7 @@ part of 'media_item.dart';
 // **************************************************************************
 
 MediaItem _$MediaItemFromJson(Map<String, dynamic> json) {
-  print("MediaMetadata: " + json['mediaMetadata'].toString());
+  // print("MediaMetadata: " + json['mediaMetadata'].toString());
   return MediaItem(
     json['id'] as String,
     json['description'] as String,
@@ -16,9 +16,10 @@ MediaItem _$MediaItemFromJson(Map<String, dynamic> json) {
     json['mediaMetadata'] == null
         ? null
         : MediaMetadata.fromJson(json['mediaMetadata'] as Map<String, dynamic>),
-    json['contributorInfo']== null
+    json['contributorInfo'] == null
         ? null
-        : ContributorData.fromJson(json['contributorInfo'] as Map<String, dynamic>),
+        : ContributorData.fromJson(
+            json['contributorInfo'] as Map<String, dynamic>),
   );
 }
 

@@ -121,7 +121,7 @@ class PhotosLibraryApiClient {
           print(response.body);
         }
 
-        print(response.body);
+        // print(response.body);
 
         return ListAlbumsResponse.fromJson(jsonDecode(response.body));
       },

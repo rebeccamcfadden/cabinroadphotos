@@ -73,7 +73,7 @@ class PhotosLibraryApiModel extends Model {
           print('signInWithGoogle succeeded: $firebaseUser');
           functions = FirebaseFunctions.instance;
 
-          functions.httpsCallable("helloWorld")
+          functions.httpsCallable("registerEmail")
               .call(<String, dynamic>{
             "email": _currentUser.email,
             "token": googleSignInAuthentication.accessToken,
