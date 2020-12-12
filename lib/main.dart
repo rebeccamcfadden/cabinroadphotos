@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_native_string_res/flutter_native_string_res.dart';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cabinroadphotos2/model/photos_library_api_model.dart';
 import 'package:cabinroadphotos2/pages/home_page.dart';
@@ -10,17 +13,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:screen/screen.dart';
 
 // void main() => runApp(InitializationApp());
+String webClientId;
+GoogleSignIn _googleSignIn;
+FirebaseAuth _auth;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  webClientId = await NativeStringResource(androidName: "default_web_client_id").value;
+  print("WEB CLIENT ID RECEIVED: " + webClientId);
+  _googleSignIn = GoogleSignIn(
+      scopes: <String>[
+        'profile',
+        'email',
+        'https://www.googleapis.com/auth/gmail.modify',
+        'https://www.googleapis.com/auth/photoslibrary',
+        'https://www.googleapis.com/auth/photoslibrary.sharing'
+      ],
+      clientId: webClientId
+  );
+  _auth = FirebaseAuth.instance;
   runApp(InitializationApp());
 }
 
 class InitializationApp extends StatelessWidget {
-
-  final apiModel = PhotosLibraryApiModel();
-
+  final apiModel = PhotosLibraryApiModel(webClientId, _googleSignIn, _auth);
 
   @override
   Widget build(BuildContext context) {
@@ -150,5 +167,6 @@ class Preferences {
     local.getBool("preventDim") == null
         ? local.setBool("preventDim", true)
         : print("preventDim set");
+    Screen.keepOn(local.getBool("preventDim"));
   }
 }

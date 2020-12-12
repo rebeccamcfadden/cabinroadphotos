@@ -93,7 +93,9 @@ class _AlbumGalleryPageState extends State<AlbumGalleryPage> {
                       icon: Icon(Icons.refresh),
                       onPressed: () => {
                         setState(() {
-                          searchResponse = ScopedModel.of<PhotosLibraryApiModel>(context)
+                          var photosLibraryApi = ScopedModel.of<PhotosLibraryApiModel>(context);
+                          photosLibraryApi.refreshToken();
+                          searchResponse = photosLibraryApi
                               .searchMediaItems(album.id);
                         })
                       }

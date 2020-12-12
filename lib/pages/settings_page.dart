@@ -62,6 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
               icon: Icon(Icons.brightness_2)),
           Settings().onBoolChanged(
             settingKey: 'preventDim',
+            defaultValue: Preferences.local.getBool("preventDim"),
             childBuilder: (BuildContext context, bool value) {
               Screen.keepOn(value);
               return Container();

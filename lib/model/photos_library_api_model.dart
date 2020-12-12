@@ -32,6 +32,7 @@ import 'package:cabinroadphotos2/photos_library_api/list_media_items_request.dar
 import 'package:cabinroadphotos2/photos_library_api/list_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_response.dart';
+import 'package:flutter_native_string_res/flutter_native_string_res.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,17 +43,27 @@ import 'package:cabinroadphotos2/photos_library_api/api_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PhotosLibraryApiModel extends Model {
-  PhotosLibraryApiModel() {
+  final String webClientId;
+  final _googleSignIn;
+  final FirebaseAuth _auth;
+
+  PhotosLibraryApiModel(this.webClientId, this._googleSignIn, this._auth) {
+    _auth.idTokenChanges().listen((event) async {
+      await refreshToken();
+    });
     _googleSignIn.onCurrentUserChanged
         .listen((GoogleSignInAccount account) async {
       _currentUser = account;
 
       if (_currentUser != null) {
         // Initialize the client with the new user credentials
-        client = PhotosLibraryApiClient(_currentUser.authHeaders);
+        client = PhotosLibraryApiClient(_currentUser);
 
         final GoogleSignInAuthentication googleSignInAuthentication =
         await _currentUser.authentication;
+
+        print("SERVER CODE");
+        print(googleSignInAuthentication.serverAuthCode);
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
@@ -72,16 +83,13 @@ class PhotosLibraryApiModel extends Model {
 
           print('signInWithGoogle succeeded: $firebaseUser');
           functions = FirebaseFunctions.instance;
-
-          functions.httpsCallable("registerEmail")
-              .call(<String, dynamic>{
-            "email": _currentUser.email,
-            "token": googleSignInAuthentication.accessToken,
-          }).then((v) {
-            print("RESULT: " + v.data);
-          }).catchError((e) {
-            print("ERROR: " + e.toString());
-          });
+          if(googleSignInAuthentication.serverAuthCode != null) {
+            await FirebaseFirestore.instance.collection("authentication")
+                .doc(_currentUser.email).set({
+              'token': googleSignInAuthentication.serverAuthCode
+            }).then((value) => print("Token updated"))
+                .catchError((error) => print("Failed to update token: $error"));
+          }
         }
       } else {
         // Reset the client
@@ -104,18 +112,8 @@ class PhotosLibraryApiModel extends Model {
   // var sharedPreferences;
 
   GoogleSignInAccount _currentUser;
-  FirebaseAuth _auth;
-  FirebaseFunctions functions;
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-      scopes: <String>[
-      'profile',
-      'email',
-      'https://www.googleapis.com/auth/gmail.modify',
-      'https://www.googleapis.com/auth/photoslibrary',
-      'https://www.googleapis.com/auth/photoslibrary.sharing'
-    ]
-  );
+  FirebaseFunctions functions;
 
   GoogleSignInAccount get user => _currentUser;
 
@@ -124,7 +122,6 @@ class PhotosLibraryApiModel extends Model {
   }
 
   Future<bool> signIn() async {
-    _auth = FirebaseAuth.instance;
     final GoogleSignInAccount user = await _googleSignIn.signIn();
     if (user == null) {
       // User could not be signed in
@@ -138,16 +135,31 @@ class PhotosLibraryApiModel extends Model {
 
   Future<void> signOut() async {
     await _googleSignIn.disconnect();
+
   }
 
   Future<void> signInSilently() async {
-    _auth = FirebaseAuth.instance;
     final GoogleSignInAccount user = await _googleSignIn.signInSilently();
     if (_currentUser == null) {
       // User could not be signed in
       return;
     }
     print('User signed in silently.');
+  }
+
+  Future<String> refreshToken() async {
+    final GoogleSignInAccount googleSignInAccount =
+    await _googleSignIn.signInSilently();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+    await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+    await _auth.signInWithCredential(credential);
+
+    return googleSignInAuthentication.accessToken; //new token
   }
 
   Future<Album> createAlbum(String title) async {

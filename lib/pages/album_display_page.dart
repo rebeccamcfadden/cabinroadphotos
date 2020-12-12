@@ -65,6 +65,7 @@ class AlbumDisplayPage extends StatelessWidget {
             controller: _refreshController,
             header: WaterDropHeader(),
             onRefresh: () async {
+              await photosLibraryApi.refreshToken();
               photosLibraryApi.updateAlbums();
               _refreshController.refreshCompleted();
             },

@@ -23,6 +23,7 @@ import 'package:cabinroadphotos2/photos_library_api/search_media_items_request.d
 import 'package:cabinroadphotos2/photos_library_api/search_media_items_response.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_request.dart';
 import 'package:cabinroadphotos2/photos_library_api/share_album_response.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:cabinroadphotos2/photos_library_api/album.dart';
 import 'package:http/http.dart' as http;
@@ -37,16 +38,22 @@ import 'list_albums_response.dart';
 import 'list_shared_albums_response.dart';
 
 class PhotosLibraryApiClient {
-  PhotosLibraryApiClient(this._authHeaders);
+  PhotosLibraryApiClient(this._currentUser);
 
-  Future<Map<String, String>> _authHeaders;
+  // Future<Map<String, String>> _authHeaders;
+  GoogleSignInAccount _currentUser;
+  
+  Future<Map<String, String>> getAuthHeaders() async {
+    return await _currentUser.authHeaders;
+  }
+  
 
   Future<Album> createAlbum(CreateAlbumRequest request) async {
     return http
         .post(
       'https://photoslibrary.googleapis.com/v1/albums',
       body: jsonEncode(request),
-      headers: await _authHeaders,
+      headers: await getAuthHeaders(),
     )
         .then(
           (Response response) {
@@ -63,7 +70,7 @@ class PhotosLibraryApiClient {
   //     JoinSharedAlbumRequest request) async {
   //   return http
   //       .post('https://photoslibrary.googleapis.com/v1/sharedAlbums:join',
-  //       headers: await _authHeaders, body: jsonEncode(request))
+  //       headers: await getAuthHeaders(), body: jsonEncode(request))
   //       .then((Response response) {
   //     if (response.statusCode != 200) {
   //       print(response.reasonPhrase);
@@ -78,7 +85,7 @@ class PhotosLibraryApiClient {
     return http
         .post(
         'https://photoslibrary.googleapis.com/v1/albums/${request.albumId}:share',
-        headers: await _authHeaders)
+        headers: await getAuthHeaders())
         .then(
           (Response response) {
         if (response.statusCode != 200) {
@@ -95,7 +102,7 @@ class PhotosLibraryApiClient {
     return http
         .get(
         'https://photoslibrary.googleapis.com/v1/albums/${request.albumId}',
-        headers: await _authHeaders)
+        headers: await getAuthHeaders())
         .then(
           (Response response) {
         if (response.statusCode != 200) {
@@ -113,7 +120,7 @@ class PhotosLibraryApiClient {
         .get(
         'https://photoslibrary.googleapis.com/v1/albums?'
             'pageSize=50',
-        headers: await _authHeaders)
+        headers: await getAuthHeaders())
         .then(
           (Response response) {
         if (response.statusCode != 200) {
@@ -133,7 +140,7 @@ class PhotosLibraryApiClient {
         .get(
         'https://photoslibrary.googleapis.com/v1/sharedAlbums?'
             'pageSize=50',
-        headers: await _authHeaders)
+        headers: await getAuthHeaders())
         .then(
           (Response response) {
         if (response.statusCode != 200) {
@@ -153,7 +160,7 @@ class PhotosLibraryApiClient {
     final String filename = path.basename(image.path);
     // Set up the headers required for this request.
     final Map<String, String> headers = <String,String>{};
-    headers.addAll(await _authHeaders);
+    headers.addAll(await getAuthHeaders());
     headers['Content-type'] = 'application/octet-stream';
     headers['X-Goog-Upload-Protocol'] = 'raw';
     headers['X-Goog-Upload-File-Name'] = filename;
@@ -162,7 +169,7 @@ class PhotosLibraryApiClient {
         .post(
       'https://photoslibrary.googleapis.com/v1/uploads',
       body: image.readAsBytesSync(),
-      headers: await _authHeaders,
+      headers: await getAuthHeaders(),
     )
         .then((Response response) {
       if (response.statusCode != 200) {
@@ -179,7 +186,7 @@ class PhotosLibraryApiClient {
         .post(
       'https://photoslibrary.googleapis.com/v1/mediaItems:search',
       body: jsonEncode(request),
-      headers: await _authHeaders,
+      headers: await getAuthHeaders(),
     )
         .then(
           (Response response) {
@@ -204,11 +211,11 @@ class PhotosLibraryApiClient {
       queryParams += "pageToken=" + request.pageToken.toString();
     }
     String requestString = 'https://photoslibrary.googleapis.com/v1/mediaItems' + queryParams;
-    Map<String, String> headers = await _authHeaders;
+    Map<String, String> headers = await getAuthHeaders();
     return http
         .get(
       'https://photoslibrary.googleapis.com/v1/mediaItems' + queryParams,
-      headers: await _authHeaders,
+      headers: await getAuthHeaders(),
     )
         .then(
           (Response response) {
@@ -228,7 +235,7 @@ class PhotosLibraryApiClient {
     print(request.toJson());
     return http
         .post('https://photoslibrary.googleapis.com/v1/mediaItems:batchCreate',
-        body: jsonEncode(request), headers: await _authHeaders)
+        body: jsonEncode(request), headers: await getAuthHeaders())
         .then((Response response) {
       if (response.statusCode != 200) {
         print(response.reasonPhrase);
